@@ -67,10 +67,10 @@
       "parameters": {
         "workflowId": {
           "__rl": true,
-          "value": "<YOUR_TARGET_SUB_WORKFLOW_ID>",
+          "value": "<YOUR_TARGET_SUB_WORKFLOW_ID_FOR_AGENT_1>",
           "mode": "list",
-          "cachedResultUrl": "/workflow/<YOUR_TARGET_SUB_WORKFLOW_ID>",
-          "cachedResultName": "<YOUR_SUB_WORKFLOW_NAME>"
+          "cachedResultUrl": "/workflow/<YOUR_TARGET_SUB_WORKFLOW_ID_FOR_AGENT_1>",
+          "cachedResultName": "<YOUR_SUB_WORKFLOW_NAME_FOR_AGENT_1>"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
@@ -586,10 +586,10 @@
       "parameters": {
         "workflowId": {
           "__rl": true,
-          "value": "q8GEz74n1ilMmsqs",
+          "value": "<YOUR_TARGET_SUB_WORKFLOW_ID>",
           "mode": "list",
-          "cachedResultUrl": "/workflow/q8GEz74n1ilMmsqs",
-          "cachedResultName": "Get Ticket Events"
+          "cachedResultUrl": "/workflow/<YOUR_TARGET_SUB_WORKFLOW_ID>",
+          "cachedResultName": "<YOUR_SUB_WORKFLOW_NAME>"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
