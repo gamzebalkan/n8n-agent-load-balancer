@@ -64,5 +64,7 @@ UPDATE ticket_queue.load_balancer
 SET total_instances = 5 
 WHERE id = 1;
 
+```
+
 ## 📄 License
 This project is licensed under the MIT License.
