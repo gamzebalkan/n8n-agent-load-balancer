@@ -1,0 +1,1337 @@
+{
+  "name": "[Gamze][Dev] Run the L1 queue",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 6
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -3136,
+        480
+      ],
+      "id": "9e15c01b-1825-49ef-9d2b-4d5b1dbfe29f",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT *\nFROM ticket_queue.tickets\nWHERE status = 'new'\nORDER BY\n  CASE WHEN context = 'customer_responded' THEN 0 ELSE 1 END,\n  submitted_at\nLIMIT 1;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2784,
+        480
+      ],
+      "id": "fbb39d23-c766-434c-81ef-9f62d12e7090",
+      "name": "Select the oldest task Row",
+      "credentials": {
+        "postgres": {
+          "id": "rAIalhygWa0u579x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE ticket_queue.tickets\nSET status = 'running'\nWHERE id = {{ $('Select the oldest task Row').first().json.id }} \nRETURNING *;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        688,
+        288
+      ],
+      "id": "d81aac2d-b7cb-49a2-821e-eea4d1a3e6e2",
+      "name": "Set status to running",
+      "credentials": {
+        "postgres": {
+          "id": "rAIalhygWa0u579x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "3kLrvpw8jYeHx8v2",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/3kLrvpw8jYeHx8v2",
+          "cachedResultName": "L1 Prod"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ticket_id": "={{ $('Select the oldest task Row').first().json.ticket_id}}",
+            "Original_L0_query": "={{ '{\\n\"ticket_id\": \"'+ $('Select the oldest task Row').first().json.ticket_id  +'\",\\n \"requester_email\": \"'+$('Select the oldest task Row').first().json.requester_email + '\",\\n \"context\": \"'+ $('Select the oldest task Row').first().json.context+'\"\\n}' }}",
+            "Task Description": "Please tend to this ticket and meaningfully move it forward as instructed. This is not a drill, this is an actual production run, so follow your instructions carefully and confidently. Confirm your outcomes before ending your turn."
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ticket_id",
+              "displayName": "ticket_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task Description",
+              "displayName": "Task Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "Original_L0_query",
+              "displayName": "Original_L0_query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        2448,
+        32
+      ],
+      "id": "4ad03db1-2d2a-466a-b86c-e3adaadc1635",
+      "name": "Run Jamie"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM ticket_queue.tickets\nWHERE  status = 'running' AND id = {{ $json.id }} \nRETURNING *;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1760,
+        2400
+      ],
+      "id": "7696c4e6-0d5b-4508-8453-02d2c7e091da",
+      "name": "Set status to running1",
+      "credentials": {
+        "postgres": {
+          "id": "rAIalhygWa0u579x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM ticket_queue.tickets\nWHERE status = 'new'\nORDER BY submitted_at\nLIMIT 1;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1440,
+        2416
+      ],
+      "id": "fd2c602c-f6ce-4648-a542-5ff19f0169b1",
+      "name": "Select the oldest task Row1",
+      "credentials": {
+        "postgres": {
+          "id": "rAIalhygWa0u579x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9cd826e1-1d2e-4498-a91d-ee4e578d7c86",
+              "leftValue": "={{ $('Select new and running duplicates').first().json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        368,
+        480
+      ],
+      "id": "086b121d-aaa4-43ab-be6f-51ee8e74257a",
+      "name": "No duplicates?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9cfcbb76-6ca0-40dd-9dd4-683aa3a8fb95",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "=running",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "980512d2-9022-487c-878b-9d19001824cf",
+              "leftValue": "={{ Math.floor((Date.now() - new Date($json.updated_at).getTime()) / (1000 * 60 * 60)) }}",
+              "rightValue": 2,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        688,
+        688
+      ],
+      "id": "5c0590f6-637d-4270-bd1d-978a28c1794d",
+      "name": "Stuck running?"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DELETE FROM ticket_queue.tickets\nWHERE ticket_id = {{ $('Select the oldest task Row').first().json.ticket_id }} \n  AND id <> {{ $('Select the oldest task Row').first().json.id }}\nRETURNING *\n;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1712,
+        288
+      ],
+      "id": "2ff78960-55bb-4ea0-a78c-ecbb124aaa6f",
+      "name": "Delete all other duplicates",
+      "notesInFlow": true,
+      "credentials": {
+        "postgres": {
+          "id": "rAIalhygWa0u579x",
+          "name": "Postgres account"
+        }
+      },
+      "notes": "Deletes all duplicate entries of this ticket from the queue"
+    },
+    {
+      "parameters": {
+        "errorMessage": "stuck running"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        672
+      ],
+      "id": "db03fead-1ef7-4a0c-9847-160df2edfa58",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DELETE FROM ticket_queue.tickets\nWHERE ticket_id = {{ $('Select the oldest task Row').first().json.ticket_id }} AND id <> {{ $('Select the oldest task Row').first().json.id }} AND status = 'running'\n;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1024,
+        672
+      ],
+      "id": "3f11cd81-9cf2-4dc1-8aa4-e0031da52bae",
+      "name": "Delete item that is stuck running",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "rAIalhygWa0u579x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "errorMessage": "Check if everything went okay here"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        912
+      ],
+      "id": "2e7ec40f-4170-487a-a0e2-086868125fe6",
+      "name": "Stop and Error1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DELETE FROM ticket_queue.tickets\nWHERE id = {{$('Select the oldest task Row').first().json.id }}\nRETURNING *\n;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1024,
+        912
+      ],
+      "id": "a022f98c-4035-4f54-9345-2d01b5b9b799",
+      "name": "DELETE current item",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "rAIalhygWa0u579x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT current_instance FROM ticket_queue.load_balancer;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1008,
+        288
+      ],
+      "id": "776026f1-da6f-4e3a-9d3b-3dffa7d6e8f0",
+      "name": "Read load balancer value",
+      "credentials": {
+        "postgres": {
+          "id": "rAIalhygWa0u579x",
+          "name": "Postgres account"
+        }
+      },
+      "notes": "The CHECK (id = 1) constraint ensures only one row can ever exist in this table.\nWhen you need to add a 4th or 5th instance later, just:\nsql\nUPDATE ticket_queue.load_balancer SET total_instances = 4;\n\n\nThe way this is intended to work is like this:\n\nRead:\nsql\nSELECT current_instance FROM ticket_queue.load_balancer;\n\nThen increment:\nsql\nUPDATE ticket_queue.load_balancer\nSET current_instance = (current_instance % total_instances) + 1;"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE ticket_queue.load_balancer\nSET current_instance = (current_instance % total_instances) + 1\nRETURNING *  \n  ;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1344,
+        288
+      ],
+      "id": "f9e54e7d-9c3a-4fa1-a3e7-d3a274f3f567",
+      "name": "Update to use next instance",
+      "credentials": {
+        "postgres": {
+          "id": "rAIalhygWa0u579x",
+          "name": "Postgres account"
+        }
+      },
+      "notes": "The CHECK (id = 1) constraint ensures only one row can ever exist in this table.\nWhen you need to add a 4th or 5th instance later, just:\nsql\nUPDATE ticket_queue.load_balancer SET total_instances = 4;\n\n\nThe way this is intended to work is like this:\n\nRead:\nsql\nSELECT current_instance FROM ticket_queue.load_balancer;\n\nThen increment:\nsql\nUPDATE ticket_queue.load_balancer\nSET current_instance = (current_instance % total_instances) + 1;"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://jamiemcp.up.railway.app/webhook/JamieMCP",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={  \n\"ticket_id\": {{ $('Select the oldest task Row').first().json.ticket_id }},  \n\"Task Description\": \n\"Please tend to this ticket and meaningfully move it forward as instructed. This is not a drill, this is an actual production run, so follow your instructions carefully and confidently. Confirm your outcomes before ending your turn.\",\n\"Original_L0_query\": \n\"{\\n\\\"ticket_id\\\": \\\"{{$('Select the oldest task Row').first().json.ticket_id}}\\\",\\n \\\"requester_email\\\": \\\"{{ $('Select the oldest task Row').first().json.requester_email }}\\\",\\n \\\"context\\\": \\\"{{$('Select the oldest task Row').first().json.context}}\\\"\\n}\"\n  }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2448,
+        464
+      ],
+      "id": "13f37148-b8a7-4c2f-8a53-b901c13aaee7",
+      "name": "Run \"MCP\" Jamie",
+      "notes": "\"MCP Jamie\" is the Jamie that runs on its own former MCP server."
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Read load balancer value').first().json.current_instance }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "cd65027b-2a92-4e0e-87b9-ee8e4ba3d4d2"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Run it locally"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "29720a28-fd32-4e83-b126-748d4791e41f",
+                    "leftValue": "={{ $('Read load balancer value').first().json.current_instance }}",
+                    "rightValue": 2,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Second Gear"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "8208799a-7df2-4b08-bae3-74e2eea33aeb",
+                    "leftValue": "={{ $('Read load balancer value').first().json.current_instance }}",
+                    "rightValue": 3,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "MCP Jamie"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "0cd305aa-2c6e-4036-9d7c-2f1920cc419e",
+                    "leftValue": "={{ $('Read load balancer value').first().json.current_instance }}",
+                    "rightValue": 4,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "4th Jamie"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Error"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        2080,
+        240
+      ],
+      "id": "b0b54e7b-8fc4-4635-81e5-b40fc0f05831",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://primary-second-gear.up.railway.app/webhook/JamieSecondGear",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=\n{  \n\"ticket_id\": {{ $('Select the oldest task Row').first().json.ticket_id }},  \n\"Task Description\": \n\"Please tend to this ticket and meaningfully move it forward as instructed. This is not a drill, this is an actual production run, so follow your instructions carefully and confidently. Confirm your outcomes before ending your turn.\",\n\"Original_L0_query\": \n\"{\\n\\\"ticket_id\\\": \\\"{{ $('Select the oldest task Row').item.json.ticket_id }}\\\",\\n \\\"requester_email\\\": \\\"{{$('Select the oldest task Row').first().json.requester_email}}\\\",\\n \\\"context\\\": \\\"{{$('Select the oldest task Row').first().json.context}}\\\"\\n}\"\n  }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2448,
+        256
+      ],
+      "id": "620a4ae8-8de6-497a-ae0e-fa98efc6a01d",
+      "name": "Run Second Gear Jamie",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000,
+      "notes": "\"MCP Jamie\" is the Jamie that runs on its own (former MCP) server."
+    },
+    {
+      "parameters": {
+        "errorMessage": "An unhandled exception!"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        2448,
+        864
+      ],
+      "id": "4fb73c30-c8ec-4cd7-b65d-2f0ef2614729",
+      "name": "Stop and Error2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e58df9be-9681-466e-b560-cc36b93b3a58",
+              "name": "Most recent Jamie event",
+              "value": "={{ (() => {   const targetAuthor = 31750668344082;    return ($json.events || [])     .filter(e => e.author_id === targetAuthor && e.created_at)     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0]; })() }}",
+              "type": "object"
+            },
+            {
+              "id": "1963543f-f056-49ca-bb67-f301f28eeb40",
+              "name": "TimeStamp of most recent event",
+              "value": "={{ (() => {   const e = ($json.events || [])     .filter(e => e.author_id === 31750668344082 && e.created_at)     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];   return e?.created_at; })() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -832,
+        496
+      ],
+      "id": "89fc4e0b-d72c-4f86-80c5-0346a1cf78a7",
+      "name": "Isolate Jamie's actions"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "q8GEz74n1ilMmsqs",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/q8GEz74n1ilMmsqs",
+          "cachedResultName": "Get Ticket Events"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Select the oldest task Row').first().json.ticket_id }}",
+            "mode": "recent"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "mode",
+              "displayName": "mode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -1232,
+        496
+      ],
+      "id": "519b284b-2769-48a9-9e69-e959352ab4a8",
+      "name": "Get Recent Ticket Events",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b1d1bc96-0642-40e3-b30a-ac2712986cf1",
+              "name": "=Time Elapsed in minutes",
+              "value": "={{ Math.ceil(   (Date.now() - new Date($json[\"TimeStamp of most recent event\"]).getTime()) / 60000 ) }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -464,
+        496
+      ],
+      "id": "686014db-c166-47df-83af-bbbb41d36c9f",
+      "name": "Time Elapsed"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM ticket_queue.tickets\nWHERE ticket_id = {{ $('Select the oldest task Row').first().json.ticket_id }} AND id <> {{ $('Select the oldest task Row').first().json.id }} AND status IN ('running', 'new')\n;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1648,
+        496
+      ],
+      "id": "8b364803-1a58-4719-bd08-7abc88f3c32a",
+      "name": "Select new and running duplicates",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "rAIalhygWa0u579x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM ticket_queue.tickets\nWHERE ticket_id = 24768793 ;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2032,
+        2656
+      ],
+      "id": "578ba294-05eb-463a-a965-07d747a70a7e",
+      "name": "Select the oldest task Row2",
+      "credentials": {
+        "postgres": {
+          "id": "rAIalhygWa0u579x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataToSave": {
+          "values": [
+            {
+              "key": "id",
+              "value": "={{ $json.ticket_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executionData",
+      "typeVersion": 1.1,
+      "position": [
+        -2080,
+        496
+      ],
+      "id": "7fca801f-33c4-4cf8-9799-093c9e171637",
+      "name": "Execution Data"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Triggering Jamie too soon!"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        464,
+        800
+      ],
+      "id": "93357ccb-4acc-44b3-9045-ee243c042b69",
+      "name": "Stop and Error3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9d8450e5-1894-4545-9624-4f5a481180f3",
+              "leftValue": "={{ $json['Time Elapsed in minutes'] }}",
+              "rightValue": 120,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -160,
+        496
+      ],
+      "id": "c442ba2a-be8c-4b18-8d85-18d656caf8c8",
+      "name": "Enough time since Jamie last update?",
+      "notesInFlow": true,
+      "notes": "At least two hours since last update"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DELETE FROM ticket_queue.tickets\nWHERE ticket_id = {{ $('Select the oldest task Row').first().json.ticket_id }} AND id = {{ $('Select the oldest task Row').first().json.id }} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        160,
+        800
+      ],
+      "id": "ee2150bc-e895-465d-bec8-b8e47aebbfde",
+      "name": "Delete item that is stuck running1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "rAIalhygWa0u579x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "940b6c54-357d-4cf0-a8d1-4688dedc5f6d",
+              "leftValue": "={{ $json.ticket_id.toString().length }}",
+              "rightValue": 6,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2464,
+        480
+      ],
+      "id": "46d4c662-5d0e-4fff-94ae-329b610b1a04",
+      "name": "Is invalid?"
+    },
+    {
+      "parameters": {
+        "errorMessage": "=Invalid ticket id. Removed the following row:\n{{ $('Select the oldest task Row').first().json.toJsonString() }}"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        -1728,
+        160
+      ],
+      "id": "67731c18-0ed2-47eb-8f13-9b5fe503240c",
+      "name": "Stop and Error4"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DELETE FROM ticket_queue.tickets\nWHERE ticket_id = {{ $('Select the oldest task Row').first().json.ticket_id }} AND id = {{ $('Select the oldest task Row').first().json.id }} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2096,
+        160
+      ],
+      "id": "22434a54-d84c-4129-b535-0bc3e4b7542c",
+      "name": "Delete item that is stuck running2",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "rAIalhygWa0u579x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "cc7bdfea-7cc6-4e47-9eec-d254299c4cc0",
+              "leftValue": "={{ $json.error.message }}",
+              "rightValue": "=The resource you are requesting could not be found",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "70c50f0e-4143-4d6f-8527-421da735eca9",
+              "leftValue": "={{ $json.error.description }}",
+              "rightValue": "RecordNotFound",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -832,
+        832
+      ],
+      "id": "ee28dc59-775e-4d81-9366-7c5386730497",
+      "name": "Ticket Not found"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Unhandled situation"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        1104
+      ],
+      "id": "76db16fa-2864-4a60-bf86-da31ccc16e15",
+      "name": "Stop and Error5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://jamie-quad.up.railway.app/webhook/JamieQuad",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={  \n\"ticket_id\": {{ $('Select the oldest task Row').first().json.ticket_id }},  \n\"Task Description\": \n\"Please tend to this ticket and meaningfully move it forward as instructed. This is not a drill, this is an actual production run, so follow your instructions carefully and confidently. Confirm your outcomes before ending your turn.\",\n\"Original_L0_query\": \n\"{\\n\\\"ticket_id\\\": \\\"{{$('Select the oldest task Row').first().json.ticket_id}}\\\",\\n \\\"requester_email\\\": \\\"{{ $('Select the oldest task Row').first().json.requester_email }}\\\",\\n \\\"context\\\": \\\"{{$('Select the oldest task Row').first().json.context}}\\\"\\n}\"\n  }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2448,
+        656
+      ],
+      "id": "cc30f832-5e47-4435-b654-3a442eefe8a6",
+      "name": "Run Jamie Quad",
+      "notes": "\"MCP Jamie\" is the Jamie that runs on its own former MCP server."
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE ticket_queue.load_balancer SET total_instances = 4 WHERE id = 1;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -304,
+        -128
+      ],
+      "id": "2fb35aab-ff68-443b-b2b8-eef42917c798",
+      "name": "Update instance number",
+      "credentials": {
+        "postgres": {
+          "id": "rAIalhygWa0u579x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM ticket_queue.load_balancer",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -624,
+        -128
+      ],
+      "id": "aee58728-2c33-4caf-8221-69e534e4f972",
+      "name": "Select instance number",
+      "credentials": {
+        "postgres": {
+          "id": "rAIalhygWa0u579x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## [Gamze][Dev]",
+        "height": 272,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -736,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "342472e8-6526-4446-9cdc-0c9aae5aabcb",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2026-04-02T08:58:42.002-04:00",
+          "Readable date": "April 2nd 2026, 8:58:42 am",
+          "Readable time": "8:58:42 am",
+          "Day of week": "Thursday",
+          "Year": "2026",
+          "Month": "April",
+          "Day of month": "02",
+          "Hour": "08",
+          "Minute": "58",
+          "Second": "42",
+          "Timezone": "America/New_York (UTC-04:00)"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Select the oldest task Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select the oldest task Row": {
+      "main": [
+        [
+          {
+            "node": "Is invalid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set status to running": {
+      "main": [
+        [
+          {
+            "node": "Read load balancer value",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Jamie": {
+      "main": [
+        []
+      ]
+    },
+    "No duplicates?": {
+      "main": [
+        [
+          {
+            "node": "Set status to running",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stuck running?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stuck running?": {
+      "main": [
+        [
+          {
+            "node": "Delete item that is stuck running",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "DELETE current item",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete item that is stuck running": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DELETE current item": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read load balancer value": {
+      "main": [
+        [
+          {
+            "node": "Update to use next instance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update to use next instance": {
+      "main": [
+        [
+          {
+            "node": "Delete all other duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete all other duplicates": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Run Jamie",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Run Second Gear Jamie",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Run \"MCP\" Jamie",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Run Jamie Quad",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Isolate Jamie's actions": {
+      "main": [
+        [
+          {
+            "node": "Time Elapsed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Recent Ticket Events": {
+      "main": [
+        [
+          {
+            "node": "Isolate Jamie's actions",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ticket Not found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Time Elapsed": {
+      "main": [
+        [
+          {
+            "node": "Enough time since Jamie last update?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select new and running duplicates": {
+      "main": [
+        [
+          {
+            "node": "Get Recent Ticket Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execution Data": {
+      "main": [
+        [
+          {
+            "node": "Select new and running duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enough time since Jamie last update?": {
+      "main": [
+        [
+          {
+            "node": "No duplicates?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Delete item that is stuck running1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete item that is stuck running1": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is invalid?": {
+      "main": [
+        [
+          {
+            "node": "Delete item that is stuck running2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Execution Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete item that is stuck running2": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ticket Not found": {
+      "main": [
+        [
+          {
+            "node": "Delete item that is stuck running1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0d42c703-a29e-4a3d-9d05-775bd6f81916",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "00ff8c6949ff406f86370a6eb1acfb0a87e68e890c192913dac4e49e171629ff"
+  },
+  "id": "JU5E6DEA1ngduqg2",
+  "tags": []
+}

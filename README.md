@@ -9,6 +9,16 @@ An enterprise-grade, state-driven orchestration and queue management pattern for
 * **Stuck-State Recovery:** Automatically cleans up or alerts on executions that have been sitting in a `running` state for more than 2 hours.
 * **Data Validation:** Drops malformed payloads (e.g., short or invalid ticket IDs) early to maintain pipeline health.
 
+## 📁 Repository Structure
+
+```text
+n8n-agent-load-balancer/
+├── agent-load-balancer-workflow.json
+├── schema.sql
+├── n8n-workflow-screenshot.png
+└── README.md
+
+```
 ---
 
 ## 📐 How It Works
