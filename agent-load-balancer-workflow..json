@@ -1,5 +1,5 @@
 {
-  "name": "[Gamze][Dev] Run the L1 queue",
+  "name": "agent-load-balancer-workflow",
   "nodes": [
     {
       "parameters": {
@@ -67,10 +67,10 @@
       "parameters": {
         "workflowId": {
           "__rl": true,
-          "value": "3kLrvpw8jYeHx8v2",
+          "value": "<YOUR_TARGET_SUB_WORKFLOW_ID>",
           "mode": "list",
-          "cachedResultUrl": "/workflow/3kLrvpw8jYeHx8v2",
-          "cachedResultName": "L1 Prod"
+          "cachedResultUrl": "/workflow/<YOUR_TARGET_SUB_WORKFLOW_ID>",
+          "cachedResultName": "<YOUR_SUB_WORKFLOW_NAME>"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
@@ -385,7 +385,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://jamiemcp.up.railway.app/webhook/JamieMCP",
+        "url": "https://<YOUR_AGENT_INSTANCE_URL_2>/webhook/<YOUR_WEBHOOK_ENDPOINT_3>",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={  \n\"ticket_id\": {{ $('Select the oldest task Row').first().json.ticket_id }},  \n\"Task Description\": \n\"Please tend to this ticket and meaningfully move it forward as instructed. This is not a drill, this is an actual production run, so follow your instructions carefully and confidently. Confirm your outcomes before ending your turn.\",\n\"Original_L0_query\": \n\"{\\n\\\"ticket_id\\\": \\\"{{$('Select the oldest task Row').first().json.ticket_id}}\\\",\\n \\\"requester_email\\\": \\\"{{ $('Select the oldest task Row').first().json.requester_email }}\\\",\\n \\\"context\\\": \\\"{{$('Select the oldest task Row').first().json.context}}\\\"\\n}\"\n  }",
@@ -521,7 +521,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://primary-second-gear.up.railway.app/webhook/JamieSecondGear",
+        "url": "https://<YOUR_AGENT_INSTANCE_URL_2>/webhook/<YOUR_WEBHOOK_ENDPOINT_2>",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "=\n{  \n\"ticket_id\": {{ $('Select the oldest task Row').first().json.ticket_id }},  \n\"Task Description\": \n\"Please tend to this ticket and meaningfully move it forward as instructed. This is not a drill, this is an actual production run, so follow your instructions carefully and confidently. Confirm your outcomes before ending your turn.\",\n\"Original_L0_query\": \n\"{\\n\\\"ticket_id\\\": \\\"{{ $('Select the oldest task Row').item.json.ticket_id }}\\\",\\n \\\"requester_email\\\": \\\"{{$('Select the oldest task Row').first().json.requester_email}}\\\",\\n \\\"context\\\": \\\"{{$('Select the oldest task Row').first().json.context}}\\\"\\n}\"\n  }",
@@ -917,7 +917,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://jamie-quad.up.railway.app/webhook/JamieQuad",
+        "url": "https://<YOUR_AGENT_INSTANCE_URL_2>/webhook/<YOUR_WEBHOOK_ENDPOINT_3>",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={  \n\"ticket_id\": {{ $('Select the oldest task Row').first().json.ticket_id }},  \n\"Task Description\": \n\"Please tend to this ticket and meaningfully move it forward as instructed. This is not a drill, this is an actual production run, so follow your instructions carefully and confidently. Confirm your outcomes before ending your turn.\",\n\"Original_L0_query\": \n\"{\\n\\\"ticket_id\\\": \\\"{{$('Select the oldest task Row').first().json.ticket_id}}\\\",\\n \\\"requester_email\\\": \\\"{{ $('Select the oldest task Row').first().json.requester_email }}\\\",\\n \\\"context\\\": \\\"{{$('Select the oldest task Row').first().json.context}}\\\"\\n}\"\n  }",
