@@ -50,6 +50,8 @@ n8n-agent-load-balancer/
      ├── Route 3 ──► HTTP Webhook (MCP Jamie)
      └── Route 4 ──► HTTP Webhook (Jamie Quad)
 
+
+```
 ---
 
 ## 🛠️ Setup Instructions
@@ -71,6 +73,8 @@ If you want to scale out to a 5th or 6th agent runtime, simply update the `total
 UPDATE ticket_queue.load_balancer 
 SET total_instances = 5 
 WHERE id = 1;
+
+```
 
 ## 📄 License
 This project is licensed under the MIT License.
