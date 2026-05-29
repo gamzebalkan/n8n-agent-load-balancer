@@ -13,6 +13,8 @@ An enterprise-grade, state-driven orchestration and queue management pattern for
 * **Stuck-State Recovery:** Automatically cleans up or alerts on executions that have been sitting in a `running` state for more than 2 hours.
 * **Data Validation:** Drops malformed payloads (e.g., short or invalid ticket IDs) early to maintain pipeline health.
 
+---
+
 ## 📁 Repository Structure
 
 ```text
@@ -21,7 +23,6 @@ n8n-agent-load-balancer/
 ├── schema.sql
 ├── n8n-workflow-screenshot.png
 └── README.md
-
 ```
 ---
 
@@ -53,8 +54,6 @@ n8n-agent-load-balancer/
      ├── Route 2 ──► HTTP Webhook (Second Gear)
      ├── Route 3 ──► HTTP Webhook (MCP Jamie)
      └── Route 4 ──► HTTP Webhook (Jamie Quad)
-
-
 ```
 ---
 
@@ -82,6 +81,7 @@ SET total_instances = 5
 WHERE id = 1;
 
 ```
+---
 
 ## 📄 License
 
